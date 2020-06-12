@@ -59,7 +59,7 @@ RUN apt-get update && \
     curl -fLO https://github.com/EmbarkStudios/cargo-deny/releases/download/$CARGO_DENY_VERSION/cargo-deny-$CARGO_DENY_VERSION-x86_64-unknown-linux-musl.tar.gz && \
     tar xf cargo-deny-$CARGO_DENY_VERSION-x86_64-unknown-linux-musl.tar.gz && \
     mv cargo-deny-$CARGO_DENY_VERSION-x86_64-unknown-linux-musl/cargo-deny /usr/local/bin/ && \
-    rm -rf cargo-deny-$CARGO_DENY_VERSION-x86_64-unknown-linux-musl cargo-deny-$CARGO_DENY_VERSION-x86_64-unknown-linux-musl.tar.gz 
+    rm -rf cargo-deny-$CARGO_DENY_VERSION-x86_64-unknown-linux-musl cargo-deny-$CARGO_DENY_VERSION-x86_64-unknown-linux-musl.tar.gz
 
 # Static linking for C++ code
 RUN sudo ln -s "/usr/bin/g++" "/usr/bin/musl-g++"
@@ -162,4 +162,24 @@ RUN cargo install -f cargo-audit && \
 
 # Expect our source code to live in /home/rust/src.  We'll run the build as
 # user `rust`, which will be uid 1000, gid 1000 outside the container.
+WORKDIR /home/rust/src
+
+# install protobuf from source
+# install protobuf from source
+# USER root
+# RUN sudo apt-get update
+RUN sudo apt-get update && \
+    sudo apt-get -y install git unzip build-essential autoconf libtool
+
+RUN git clone https://github.com/google/protobuf.git && \
+    cd protobuf && \
+    sudo ./autogen.sh && \
+    sudo ./configure && \
+    sudo make && \
+    sudo make install && \
+    sudo ldconfig && \
+    sudo make clean && \
+    cd ..
+    # rm -r protobuf
+
 WORKDIR /home/rust/src
